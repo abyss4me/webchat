@@ -1,0 +1,151 @@
+	div.private_area {
+		border-bottom-style: solid;
+		border-bottom-width: thin;
+		border-top-style: solid;
+		border-top-width: thin;
+		height: 80px;
+		overflow:scroll;
+	}
+
+	a.second-name {
+		color: red ; /* Цвет ссылок */
+	}
+	
+	.time-style {
+		font-style: italic;
+		float: left;
+	}
+
+	div.typ-area {
+		height: 40px;
+		margin-top: 10px;
+	}
+	div.leave-message {
+		font-style: italic;
+		float: left;
+	}
+
+	div.public_area {
+		height:450px;
+		overflow:scroll;
+		/*width: 80%;*/
+	}
+	
+	div.empty {
+		
+		border-bottom-style: solid;
+		border-bottom-width: thin;
+		border-left-style: solid;
+		border-left-width: thin;
+		height: 80px;
+	}
+	
+	div.users_list {
+		height:450px;
+		/*width:20%;*/
+		overflow:scroll;
+		border-left-style: solid;
+		border-left-width: thin;
+	}
+	
+	.smiles {
+		display:none;
+		overflow:scroll;
+		padding:5px;
+		width:150px;
+		height:150px;
+		background-color:grey;
+		position: absolute;
+		left: 1000px;
+		top:450px;
+		z-index:1;
+	}
+	
+	h5 {
+		color:black;
+		margin:0px;
+		padding-top:10px;
+	}
+	
+	.text_inp {
+		width: 70%;
+	}
+
+	#private-names {
+		font-weight: bold;
+		float: left;
+	}
+
+	#name-separator {
+		float: left;
+	}
+	
+	#smiles-link {
+		position: absolute;
+		left: 1000px;
+		top:550px;
+	}
+
+	#message-style {
+		color: black;
+		font-weight: bold;
+		font-size: 13px;
+	}
+	
+	#total-caption {
+		font-weight: bold;
+	}
+	
+	
+
+	
+	/*reg form */
+	.reg-form {
+		position: absolute;
+		left: 400px;
+		top: 100px;
+		width:400px;
+		background-color:grey;
+		border-top-right-radius: 5px;
+		border-top-left-radius: 5px;
+		border-bottom-left-radius: 5px;
+		border-bottom-right-radius: 5px;
+	}
+			
+	.nick-lab {
+		float: left;
+		margin-left:20px;
+		margin-right:29px;
+		padding-right:10px;
+	}
+	
+	.pass-lab {
+		float: left;
+		margin-left:20px;
+		padding-right:10px;
+	}
+		
+	.nick-form {
+		float: none;
+	}
+			
+	.pass-input {
+				/*float:left*/
+	}
+			
+	.reg-group {
+		margin-top:5px;
+		margin-bottom:5px;
+		margin-left:5px;
+	}
+	
+	.sign-in {
+		margin-left:98px;
+	}
+	
+	.gender-sel {
+		margin-left:98px;
+		margin-top: 10px;
+		margin-bottom: 10px;
+	}
+   
