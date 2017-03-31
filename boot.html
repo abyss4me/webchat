@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+    <title>Web test chat</title>
+
+    <!-- Bootstrap -->
+    <link href="./bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.3/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+     
+    <!-- !!!!!!!! Include external .css file for future: <link rel="stylesheet" type="text/css" href="mystyle.css"> -->
+	<link rel="stylesheet" type="text/css" href="style.css">
+ </head>
+ 
+<body>
+<div class="container-fluid">
+ <div class="row">
+	<div class="col-md-10 public_area"></div>
+	<div class="col-md-2 users_list">
+		<div id="total-caption">Total in chat: </div>
+		<h5>Girls:</h5><div id="girls"></div>
+		<h5>Boys:</h5><div id="boys"></div>
+	</div>  
+</div>
+<div class="row">
+  <div class="col-md-10 private_area"></div>
+  <div class="col-md-2 empty"></div>
+</div>
+<div class="row">
+  <div class="col-md-12 typ-area">
+	<input type="text" class="form-control text_inp" placeholder="Your message">
+	
+	<button class="btn btn-default send" type="submit">Send</button>
+	<button class="btn btn-default exit" type="submit">Exit</button>
+	<button class="btn btn-default private" type="submit">Private</button>
+  </div>
+  <a id="smiles-link" href="#" >Смайлы</a>
+  <div class="smiles">
+	  <table>
+		
+	</table>
+  </div>
+</div>
+
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="jquery-3.1.1.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="./bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <script>
+		var ID = 0;
+		var TIMESTAMP = 0;
+		var SESSION_NAME, ID_TO, OBJ; 
+		var PRIVATE_ID = 0;
+		var INTERVAL = 1000;
+		var URL = "http://localhost/";
+		$.get(URL + "fetch_message.php", {id:0}, showMessgOnExit); /*  print 5 first messages */
+		$.get(URL + "users_online.php", {gettimestamp: "get"}, ShowUsers); 
+		
+		function showMessgOnExit(data) {
+			var obj = JSON.parse(data);
+			var i = 0;
+			ID = obj[0].id;
+			var n = 0;
+			while (obj[n] != null) {
+				n++;
+			}
+			n--;
+			if ( n > 11 ) 
+				n = 10;
+			for (i=n; i>=0; i--)
+			{
+				
+		            if (obj[i].message.indexOf("→") !== -1)
+						
+						$(".public_area").append("<div>"+StringStylisationPublic(obj[i].message)+"</div>");
+					else 
+					    $(".public_area").append("<div>" + obj[i].message + "</div>");
+					    $('.public_area').scrollTop($('.public_area').height());
+				
+			}
+			return true;
+		}
+		
+		function ShowUsers(data) {
+			var i = 0;	
+			var obj;
+			var g = 0, b = 0;
+	       try {
+			   obj = JSON.parse(data);
+		   }
+	       catch(e) {
+		   }
+			$("#girls").empty();
+			$("#boys").empty();
+			try { 
+				while ( obj[i].name != undefined ) {
+						switch (obj[i].sex) {
+							case 'f': { 
+								$("#girls").append("<a href=javascript:User('" + obj[i].name + "');>" + obj[i].name + "</a>" + "</br>"); 
+								//$('#user').css('cursor', 'pointer');					
+								i++; 
+								g++;
+								break; 
+							};
+							case 'm': {  
+								$("#boys").append("<a href=javascript:User('" + obj[i].name + "');>" + obj[i].name + "</a>" + "</br>"); 
+								i++; 
+								b++;
+								break; 
+							};
+						}
+					}
+			}
+				catch(e) { 
+				}	
+		$(".users_list h4:first").empty().append("Girls: " + g);	/* the nubber of users in chat girls and boys*/
+		$(".users_list h4:last").empty().append("Boys: " + b);
+		$("#total-caption").empty().append("Total in chat: " + i);   /* total number */
+		}
+		
+		function pageUpdate(data) {
+			var obj = JSON.parse(data)
+			if (obj[0] == 0)
+					return false;
+			var i = 0;
+			var n = 0;
+			
+			while (obj[n] != null) { /* count how many messages in array */
+				n++;
+			}
+			ID = obj[n-1].id;
+			for (i = 0; i <= n-1; i++)
+			{
+				
+				if (SplitString(obj[i].message)) {
+					$(".public_area").append("<div>"+StringStylisationPublic(obj[i].message)+"</div>");
+					$('.public_area').scrollTop($('.public_area').height());
+					
+				} else {
+		            if (obj[i].message.indexOf("→") === -1)
+						$(".public_area").append(obj[i].message);
+					else 
+					    $(".public_area").append("<div>"+StringStylisationPublic(obj[i].message)+"</div>");
+					$('.public_area').scrollTop($('.public_area').height());
+				}
+			}
+		    $('.public_area').scrollTop($('.public_area').height());
+			return true;
+		}
+
+		function RetrieveUsername(data) {
+			
+			SESSION_NAME = data;
+			$(document).attr("title", SESSION_NAME);
+			if (SESSION_NAME == "unset")
+			{
+				window.location.assign(URL + "reg.html");	
+			}
+			return false;
+		}
+		function GetTime() {
+					var date = new Date();
+					var h = date.getHours();
+					var m = date.getMinutes();
+					var sec = date.getSeconds();
+					if ((m >= 0) && (m < 10)) m = '0' + m;
+					return "(" + h + ":" + m + ":" + sec + ")" + "&nbsp&nbsp"; 
+				}
+				
+		function SplitString(str) {
+			var sls = str.slice(str.indexOf("→"), str.length);
+			if ( sls.search(SESSION_NAME) != -1) {
+				return true;
+			} else {
+				return false;
+			}
+		}
+		
+		function User(name) {
+			GetNameIdByUserName(name);
+			$(".form-control").val(name + ":");
+			$(".form-control").focus();
+		}
+		 function IsOnline(data) {
+			 if(data == "offline") { 
+				window.location.assign(URL + "reg.html");}
+		 }
+		
+		function FetchMessage() {
+			
+			$.get(URL + "is_online.php", {name:SESSION_NAME}, IsOnline); /*check whether user online status is 1 */
+			$.get(URL + "users_online.php", {getonlineusers:"get", username:SESSION_NAME}, ShowUsers);
+			$.get(URL + "fetch_message.php", {id:ID}, pageUpdate);	
+			$.get(URL + "private_chat.php", {flag:1}, GetIdOfUsers); /* !!!!!!!!!!!!!!!!!!!!!!!!!!*/
+			$.get(URL + "private_chat.php", {name_from:SESSION_NAME, msg_id:PRIVATE_ID}, privatePageUpdate); 
+		}
+				
+		/* ----------------------Privte Chat functions -------------------------------------*/
+		function GetIdOfUsers(data) {
+			OBJ = JSON.parse(data)
+		}
+			
+		function GetNameIdByUserName(name) {
+			var i = 0;
+			while(OBJ[i] != null) {
+				if (OBJ[i].name == name) {
+					ID_TO = OBJ[i].id;
+					break;
+				}
+				i++;
+			}	
+		}
+		
+		function privatePageUpdate(data) {
+			obj = JSON.parse(data);
+			if ( obj[0] == 0 )
+					return false;
+			var i = 0;
+			var n = 0;	
+			while (obj[n] != null) { /* count how many messages in array */
+				n++;
+			}
+			PRIVATE_ID = obj[n-1].id;
+			for (i = 0; i <= n-1; i++)
+			{		
+					$(".private_area").append("<div>" + StringStylisation(obj[i].message) + "</div>");
+					$('.private_area').scrollTop($('.private_area').height());
+			}
+		    $('.private_area').scrollTop($('.private_area').height());
+			return true;		
+		}
+		function MessageStilisation(str) {
+			str = "<span id='message-style'>" + str + "</span>";
+			return str;
+		}
+		function StringStylisation(str) {		
+			var slice_1 = str.split("→");
+			var name_1 = slice_1[0];
+			var slice_2 = slice_1[1].split(":");
+			var name_2 = slice_2[0];	
+			var message = slice_2[1];
+			name_1 = "<div id='private-names'>" + "<a href=javascript:User('" + name_1 + "');>" + name_1 + "</a>" + "</div>";
+			//if (name_2 == SESSION_NAME)
+			//	name_2 = "<div id='private-names'>" + "<a class='second-name' href=javascript:User('" + name_2 + "');>" + name_2 + "</a>" + "</div>";
+			//else
+			//	name_2 = "<div id='private-names'>" + "<a href=javascript:User('" + name_2 + "');>" + name_2 + "</a>" + "</div>";
+			final_string = "<div class='time-style'>" + GetTime() + "</div>" + name_1  + "<div id='name-separator'>" + "→"  +"</div>" + name_2 + ", " + message;
+			return final_string;		
+		}
+		
+		function StringStylisationPublic(str) {
+			var slice_1 = str.split("→");
+			var name_1 = slice_1[0];
+			var slice_2 = slice_1[1].split(":");
+			var name_2 = slice_2[0];
+			var message = slice_2[1];
+			if (message === undefined)
+			{
+				message = name_2;
+				name_2 = "";
+			}
+			name_1 = "<div id='private-names'>" + "<a href=javascript:User('" + name_1 + "');>" + name_1 + "</a>" + "</div>";
+			//name_2 = "<div id='private-names'>" + "<a href=javascript:User('" + name_2 + "');>" + name_2 + "</a>" + "</div>";
+			if (name_2 ==="") {
+				final_string = "<div class='time-style'>" + GetTime() + "</div>" + name_1  + "<div id='name-separator'>" + ":&nbsp"  +"</div>" + name_2 + "&nbsp" + MessageStilisation(message);			
+			} else
+				final_string = "<div class='time-style'>" + GetTime() + "</div>" + name_1  + "<div id='name-separator'>" + ":&nbsp"  +"</div>" + name_2 + ", " + MessageStilisation(message);
+			return final_string;		
+		}
+		
+		function Smile(smile) {
+			smile = "./smiles/" + smile;
+			switch (smile) {
+				case "./smiles/aa.gif": { smile = "*angel*"; break}
+				case "./smiles/ab.gif": { smile = "*smile*"; break}
+				case "./smiles/ac.gif": { smile = "*sad*"; break}
+				case "./smiles/ad.gif": { smile = "*wink*"; break}
+				case "./smiles/ae.gif": { smile = "*tangue*"; break}
+				case "./smiles/af.gif": { smile = "*glass*"; break}	
+				case "./smiles/ag.gif": { smile = "*ROFL*"; break}
+				case "./smiles/ah.gif": { smile = "*shy*"; break}
+				case "./smiles/ai.gif": { smile = "*surprised*"; break}	
+				case "./smiles/aj.gif": { smile = "*kiss*"; break}
+				case "./smiles/ak.gif": { smile = "*cry*"; break}
+				case "./smiles/al.gif": { smile = "*silent*"; break}
+				case "./smiles/am.gif": { smile = "*evil*"; break}	
+				case "./smiles/an.gif": { smile = "*dummy*"; break}
+				case "./smiles/ao.gif": { smile = "*proud*"; break}
+				case "./smiles/ap.gif": { smile = "*chuckl*"; break}		
+				case "./smiles/aq.gif": { smile = "*devil*"; break}
+				case "./smiles/ar.gif": { smile = "*music*"; break}
+				case "./smiles/as.gif": { smile = "*flirt*"; break}
+				case "./smiles/at.gif": { smile = "*vomit*"; break}
+				case "./smiles/au.gif": { smile = "*yawn*"; break}
+				case "./smiles/av.gif": { smile = "*stop*"; break}
+				case "./smiles/aw.gif": { smile = "*love*"; break}
+				case "./smiles/ax.gif": { smile = "*flower*"; break}
+				case "./smiles/ay.gif": { smile = "*thumbsup*"; break}
+				case "./smiles/az.gif": { smile = "*booze*"; break}			
+			}		
+			var message = $(".form-control").val();
+			$(".form-control").val(message + smile);
+		}
+				
+		$(document).ready(function(){ 
+			
+			$.get(URL + "db_connect.php", RetrieveUsername); /*  print 5 first messages */
+			var send = function() {   /* Function expression - read message from form and send it */
+					var messg = $(".form-control").val(); 			
+					var mesg = SESSION_NAME + "→" + messg; /*!!!!!!!!!!!!!!!*/
+					$(".form-control").val("");
+					$.get(URL + "put_message.php", {id:ID, message:mesg}); 	
+			}
+			$.get(URL + "session.php", RetrieveUsername); /*  print 5 first messages */		
+			setInterval(FetchMessage, INTERVAL); 
+			$('.public_area').scrollTop($('.public_area').height());
+			$('.private_area').scrollTop($('.private_area').height());
+			$(".form-control").focus();         /* set focus on Input field */
+			
+            $(".send").click(function () { 		/* action by SEND */			
+							send();	
+							return false;		
+            });	 
+            
+            $(".form-control").on("keydown", function(e){ /* action by ENTER click */
+							if(e.which == 13) 
+								send(); 
+				}); 
+                
+            $(".exit").click(function () { 				/* action by exit click */
+				$.get(URL + "exit.php", {session_id:SESSION_NAME}, function(){
+							$.get(URL + "put_message.php", {message:"Нас покинул: " + SESSION_NAME}); 
+							window.location.assign(URL + "reg.html"); return false; 
+							}); 		
+			   return false;		
+            });
+            
+            $(".private").click(function () {          /* write to private */
+							var messg = $(".form-control").val();
+							messg = SESSION_NAME  + "→" +  messg;  /* -> - deliminator */
+							$(".form-control").val("");
+							$.get(URL + "private_chat.php", {message:messg, name_from:SESSION_NAME, id_to:ID_TO});	 
+			});    
+			
+			$("#smiles-link").click(function(){ $(".smiles, table tr, td, a").show();
+				var i = 0, j = 0;
+				var ascii = 97;
+				$("table").empty();
+				for (i=0; i<6; i++)
+				{
+					$("table").append("<tr id='"+i +"'></tr>");
+					for (j=0; j<=3; j++) {
+						smile = 'a' + String.fromCharCode(ascii) + ".gif";
+						$("#"+i).append("<td><a href=" + "javascript:Smile('" + smile + "'" + ")>"+"<IMG SRC = ./smiles/" + smile + "></a></td>");
+						ascii++;
+					}
+				}
+				});
+				
+		$(".typ-area").click(function(){ $(".smiles").hide();});	   
+        });       
+    </script>
+  </body>
+</html>

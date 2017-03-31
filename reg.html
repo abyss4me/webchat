@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<head>
+ <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>
+				Test WEB chat
+		</title>
+    <!-- Bootstrap -->
+    <link href="./bootstrap-3.3.7-dist/css/bootstrap.min.css" rel="stylesheet">
+   <link rel="stylesheet" type="text/css" href="style.css">	
+</head>
+
+<body>
+<div class="reg-form">
+	<div class="reg-group">
+	<form>
+		<div class="nick-lab">
+			<label for="inputNick">Name</label>
+		</div>
+		<div class="nick-form">
+			<input type="text"  id="inputNick"  placeholder="Nickname">
+		</div>
+	<div class="pass-lab">
+		<label for="inputPasswd">Password</label>
+    </div>
+		<div class="pass-input">
+			<input type="password" id="inputPasswd" placeholder="Password">
+		</div>
+		<div class="gender-sel">
+			<input type="radio" name="gender" value="m" checked> Male
+			<input type="radio" name="gender" value="f"> Female<br>
+		</div>
+		<div class="sign-in">
+			<button type="submit">Sign in</button>
+		</div>
+	</form>
+	</div>
+</div>	
+ <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="jquery-3.1.1.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="./bootstrap-3.3.7-dist/js/bootstrap.min.js"></script>
+    <script type="text/javascript">
+		function onSuccess(data) {
+			if (data ==="userisbanned") {
+				alert("You are banned for some time!");
+				return false;
+			}
+			else if (data === "err_user_exists") {
+				alert("This name is already exists or password is wrong!");
+			} else window.location.assign("http://localhost/boot.html");	
+			
+			return false;
+		}
+		function formCheck(name, passwd)
+		{
+			var pat = /^[0-9]*$/;
+			
+			if (pat.test(name)) {
+				alert("Incorrect name!");
+				return false;
+			 }
+			if ((name == "" )|| (name.length <= 2)) {
+			    alert("Name field is empty or too short!");
+			    return false;
+			}
+			if (passwd == "") {
+				alert("Password field is empty!");
+				return false;
+			}		 
+			return true;
+		}
+		$(document).ready(function() { 
+		    $("button").click(function(event) { 
+			    var name = $("#inputNick").val();
+				var passwd = $("#inputPasswd").val();
+			    var sex = $(":radio:checked").val();
+			    var regPath = "http://localhost/reg_user.php";
+				if (formCheck(name, passwd)) {				
+					$.get(regPath, {login: passwd, nickname: name, gender: sex}, onSuccess);
+					$.get("http://localhost/put_message.php", {message:"К нам входит: "+ name}); 	
+				}
+				return false;		
+			})
+		});
+    </script>
+</body>
+</html>
