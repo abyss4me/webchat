@@ -38,11 +38,18 @@
 <div class="row">
   <div class="col-md-12 typ-area">
 	<input type="text" class="form-control text_inp" placeholder="Your message">
-	
 	<button class="btn btn-default send" type="submit">Send</button>
 	<button class="btn btn-default exit" type="submit">Exit</button>
 	<button class="btn btn-default private" type="submit">Private</button>
+	
+	<select id="color">
+	  <option value="red">red</option>
+	  <option value="green">green</option>
+	  <option value="blue">blue</option>
+	  <option value="black">black</option>
+  </select>
   </div>
+  
   <a id="smiles-link" href="#" >Смайлы</a>
   <div class="smiles">
 	  <table>
@@ -61,6 +68,7 @@
 		var SESSION_NAME, ID_TO, OBJ; 
 		var PRIVATE_ID = 0;
 		var INTERVAL = 1000;
+		var COLOR = "black";
 		var URL = "http://localhost/";
 		$.get(URL + "fetch_message.php", {id:0}, showMessgOnExit); /*  print 5 first messages */
 		$.get(URL + "users_online.php", {gettimestamp: "get"}, ShowUsers); 
@@ -70,17 +78,13 @@
 			var i = 0;
 			ID = obj[0].id;
 			var n = 0;
-			while (obj[n] != null) {
+			while( obj[n] != null ) {
 				n++;
 			}
 			n--;
-			if ( n > 11 ) 
-				n = 10;
-			for (i=n; i>=0; i--)
-			{
-				
-		            if (obj[i].message.indexOf("→") !== -1)
-						
+			if( n > 11 ) n = 10;
+			for(i = n; i >= 0; i-- ) {
+		            if( obj[i].message.indexOf("→") !== -1 )	
 						$(".public_area").append("<div>"+StringStylisationPublic(obj[i].message)+"</div>");
 					else 
 					    $(".public_area").append("<div>" + obj[i].message + "</div>");
@@ -94,16 +98,17 @@
 			var i = 0;	
 			var obj;
 			var g = 0, b = 0;
-	       try {
+			try {
 			   obj = JSON.parse(data);
-		   }
-	       catch(e) {
-		   }
+			}
+			catch(e) {
+				/* TODO */
+			}
 			$("#girls").empty();
 			$("#boys").empty();
 			try { 
-				while ( obj[i].name != undefined ) {
-						switch (obj[i].sex) {
+				while( obj[i].name != undefined ) {
+						switch( obj[i].sex ) {
 							case 'f': { 
 								$("#girls").append("<a href=javascript:User('" + obj[i].name + "');>" + obj[i].name + "</a>" + "</br>"); 
 								//$('#user').css('cursor', 'pointer');					
@@ -134,19 +139,17 @@
 			var i = 0;
 			var n = 0;
 			
-			while (obj[n] != null) { /* count how many messages in array */
+			while( obj[n] != null ) { /* count how many messages in array */
 				n++;
 			}
 			ID = obj[n-1].id;
-			for (i = 0; i <= n-1; i++)
-			{
-				
-				if (SplitString(obj[i].message)) {
+			for( i = 0; i <= n - 1; i++ ) {	
+				if( SplitString(obj[i].message) ) {
 					$(".public_area").append("<div>"+StringStylisationPublic(obj[i].message)+"</div>");
 					$('.public_area').scrollTop($('.public_area').height());
 					
 				} else {
-		            if (obj[i].message.indexOf("→") === -1)
+		            if( obj[i].message.indexOf("→") === -1 )
 						$(".public_area").append(obj[i].message);
 					else 
 					    $(".public_area").append("<div>"+StringStylisationPublic(obj[i].message)+"</div>");
@@ -161,8 +164,7 @@
 			
 			SESSION_NAME = data;
 			$(document).attr("title", SESSION_NAME);
-			if (SESSION_NAME == "unset")
-			{
+			if( SESSION_NAME == "unset" ) {
 				window.location.assign(URL + "reg.html");	
 			}
 			return false;
@@ -172,13 +174,13 @@
 					var h = date.getHours();
 					var m = date.getMinutes();
 					var sec = date.getSeconds();
-					if ((m >= 0) && (m < 10)) m = '0' + m;
+					if( (m >= 0) && (m < 10) ) m = '0' + m;
 					return "(" + h + ":" + m + ":" + sec + ")" + "&nbsp&nbsp"; 
 				}
 				
 		function SplitString(str) {
 			var sls = str.slice(str.indexOf("→"), str.length);
-			if ( sls.search(SESSION_NAME) != -1) {
+			if( sls.search(SESSION_NAME) != -1 ) {
 				return true;
 			} else {
 				return false;
@@ -191,12 +193,11 @@
 			$(".form-control").focus();
 		}
 		 function IsOnline(data) {
-			 if(data == "offline") { 
+			 if( data == "offline" ) { 
 				window.location.assign(URL + "reg.html");}
 		 }
 		
-		function FetchMessage() {
-			
+		function FetchMessage() {		
 			$.get(URL + "is_online.php", {name:SESSION_NAME}, IsOnline); /*check whether user online status is 1 */
 			$.get(URL + "users_online.php", {getonlineusers:"get", username:SESSION_NAME}, ShowUsers);
 			$.get(URL + "fetch_message.php", {id:ID}, pageUpdate);	
@@ -211,8 +212,8 @@
 			
 		function GetNameIdByUserName(name) {
 			var i = 0;
-			while(OBJ[i] != null) {
-				if (OBJ[i].name == name) {
+			while( OBJ[i] != null ) {
+				if( OBJ[i].name == name ) {
 					ID_TO = OBJ[i].id;
 					break;
 				}
@@ -222,16 +223,15 @@
 		
 		function privatePageUpdate(data) {
 			obj = JSON.parse(data);
-			if ( obj[0] == 0 )
+			if( obj[0] == 0 )
 					return false;
 			var i = 0;
 			var n = 0;	
-			while (obj[n] != null) { /* count how many messages in array */
+			while( obj[n] != null ) { /* count how many messages in array */
 				n++;
 			}
 			PRIVATE_ID = obj[n-1].id;
-			for (i = 0; i <= n-1; i++)
-			{		
+			for(i = 0; i <= n - 1; i++ ) {		
 					$(".private_area").append("<div>" + StringStylisation(obj[i].message) + "</div>");
 					$('.private_area').scrollTop($('.private_area').height());
 			}
@@ -239,15 +239,24 @@
 			return true;		
 		}
 		function MessageStilisation(str) {
-			str = "<span id='message-style'>" + str + "</span>";
+			str = "<span id='message-style' style='color:"  + COLOR + "'>" + str + "</span>";
 			return str;
 		}
 		function StringStylisation(str) {		
 			var slice_1 = str.split("→");
 			var name_1 = slice_1[0];
 			var slice_2 = slice_1[1].split(":");
-			var name_2 = slice_2[0];	
-			var message = slice_2[1];
+			var ind = slice_1[1].indexOf(":");
+			if( ind === -1 ) {
+				name_2 = name_1;
+				var message = slice_1[1];
+			} 
+			else {
+				var name_2 = slice_2[0];
+				var message = slice_2[1];
+			} 
+			//var name_2 = slice_2[0];	
+			
 			name_1 = "<div id='private-names'>" + "<a href=javascript:User('" + name_1 + "');>" + name_1 + "</a>" + "</div>";
 			//if (name_2 == SESSION_NAME)
 			//	name_2 = "<div id='private-names'>" + "<a class='second-name' href=javascript:User('" + name_2 + "');>" + name_2 + "</a>" + "</div>";
@@ -261,16 +270,16 @@
 			var slice_1 = str.split("→");
 			var name_1 = slice_1[0];
 			var slice_2 = slice_1[1].split(":");
+			var ind = slice_1[1].indexOf(":");
 			var name_2 = slice_2[0];
 			var message = slice_2[1];
-			if (message === undefined)
-			{
+			if( message === undefined ) {
 				message = name_2;
 				name_2 = "";
 			}
 			name_1 = "<div id='private-names'>" + "<a href=javascript:User('" + name_1 + "');>" + name_1 + "</a>" + "</div>";
 			//name_2 = "<div id='private-names'>" + "<a href=javascript:User('" + name_2 + "');>" + name_2 + "</a>" + "</div>";
-			if (name_2 ==="") {
+			if( name_2 === "" ) {
 				final_string = "<div class='time-style'>" + GetTime() + "</div>" + name_1  + "<div id='name-separator'>" + ":&nbsp"  +"</div>" + name_2 + "&nbsp" + MessageStilisation(message);			
 			} else
 				final_string = "<div class='time-style'>" + GetTime() + "</div>" + name_1  + "<div id='name-separator'>" + ":&nbsp"  +"</div>" + name_2 + ", " + MessageStilisation(message);
@@ -279,7 +288,7 @@
 		
 		function Smile(smile) {
 			smile = "./smiles/" + smile;
-			switch (smile) {
+			switch( smile ) {
 				case "./smiles/aa.gif": { smile = "*angel*"; break}
 				case "./smiles/ab.gif": { smile = "*smile*"; break}
 				case "./smiles/ac.gif": { smile = "*sad*"; break}
@@ -311,14 +320,14 @@
 			$(".form-control").val(message + smile);
 		}
 				
-		$(document).ready(function(){ 
+		$(document).ready(function() { 
 			
 			$.get(URL + "db_connect.php", RetrieveUsername); /*  print 5 first messages */
 			var send = function() {   /* Function expression - read message from form and send it */
-					var messg = $(".form-control").val(); 			
-					var mesg = SESSION_NAME + "→" + messg; /*!!!!!!!!!!!!!!!*/
-					$(".form-control").val("");
-					$.get(URL + "put_message.php", {id:ID, message:mesg}); 	
+				var messg = $(".form-control").val(); 			
+				var mesg = SESSION_NAME + "→" + messg; /*!!!!!!!!!!!!!!!*/
+				$(".form-control").val("");
+				$.get(URL + "put_message.php", { id:ID, message:mesg }); 	
 			}
 			$.get(URL + "session.php", RetrieveUsername); /*  print 5 first messages */		
 			setInterval(FetchMessage, INTERVAL); 
@@ -327,44 +336,47 @@
 			$(".form-control").focus();         /* set focus on Input field */
 			
             $(".send").click(function () { 		/* action by SEND */			
-							send();	
-							return false;		
+				send();	
+				return false;		
             });	 
             
-            $(".form-control").on("keydown", function(e){ /* action by ENTER click */
-							if(e.which == 13) 
-								send(); 
-				}); 
+            $(".form-control").on("keydown", function(e) { /* action by ENTER click */
+				if( e.which == 13 ) send(); 
+			}); 
                 
             $(".exit").click(function () { 				/* action by exit click */
-				$.get(URL + "exit.php", {session_id:SESSION_NAME}, function(){
-							$.get(URL + "put_message.php", {message:"Нас покинул: " + SESSION_NAME}); 
-							window.location.assign(URL + "reg.html"); return false; 
-							}); 		
+				$.get(URL + "exit.php", { session_id:SESSION_NAME }, function(){
+					$.get(URL + "put_message.php", { message:"Нас покинул: " + SESSION_NAME }); 
+					window.location.assign(URL + "reg.html"); return false; 
+				}); 		
 			   return false;		
             });
             
             $(".private").click(function () {          /* write to private */
-							var messg = $(".form-control").val();
-							messg = SESSION_NAME  + "→" +  messg;  /* -> - deliminator */
-							$(".form-control").val("");
-							$.get(URL + "private_chat.php", {message:messg, name_from:SESSION_NAME, id_to:ID_TO});	 
+				var messg = $(".form-control").val();
+				messg = SESSION_NAME  + "→" +  messg;  /* -> - deliminator */
+				$(".form-control").val("");
+				$.get(URL + "private_chat.php", { message:messg, name_from:SESSION_NAME, id_to:ID_TO });	 
 			});    
 			
-			$("#smiles-link").click(function(){ $(".smiles, table tr, td, a").show();
+			$("#smiles-link").click(function() { 
+				$(".smiles, table tr, td, a").show();
 				var i = 0, j = 0;
 				var ascii = 97;
 				$("table").empty();
-				for (i=0; i<6; i++)
-				{
-					$("table").append("<tr id='"+i +"'></tr>");
-					for (j=0; j<=3; j++) {
+				for( i = 0; i < 6; i++ ) {
+					$("table").append("<tr id='" + i + "'></tr>");
+					for( j = 0; j <= 3; j++ ) {
 						smile = 'a' + String.fromCharCode(ascii) + ".gif";
-						$("#"+i).append("<td><a href=" + "javascript:Smile('" + smile + "'" + ")>"+"<IMG SRC = ./smiles/" + smile + "></a></td>");
+						$("#" + i).append("<td><a href=" + "javascript:Smile('" + smile + "'" + ")>" + "<IMG SRC = ./smiles/" + smile + "></a></td>");
 						ascii++;
 					}
 				}
-				});
+			});
+			$("#color").change(function () {
+				COLOR = $("#color :selected").text();
+			});
+			
 				
 		$(".typ-area").click(function(){ $(".smiles").hide();});	   
         });       
